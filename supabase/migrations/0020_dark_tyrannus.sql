@@ -1,0 +1,1 @@
+ALTER TABLE "userData" DROP COLUMN IF EXISTS "data";

@@ -1,0 +1,18 @@
+import { pgTable, uuid, timestamp, text, doublePrecision } from 'drizzle-orm/pg-core';
+
+export const userTable = pgTable('users', {
+	id: uuid('id').primaryKey(),
+	userid: text('userid'),
+	email: text('email'),
+	salt: text('salt'),
+	created_at: timestamp('created_at')
+});
+
+export const userData = pgTable('user-data', {
+	id: uuid('id').primaryKey(),
+	userid: text('userid'),
+	data: text('data'),
+	iv: text('iv'),
+	tag: text('tag'),
+	changed_at: text('changed_at')
+});

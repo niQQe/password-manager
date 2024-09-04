@@ -1,0 +1,1 @@
+ALTER TABLE "passwords" RENAME COLUMN "encypted_password" TO "encrypted_password";

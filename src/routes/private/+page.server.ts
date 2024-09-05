@@ -23,7 +23,7 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 };
 
 export const actions: Actions = {
-	addPassword: async ({ request, locals }) => {
+	addItem: async ({ request, locals }) => {
 		const { user } = (await locals.safeGetSession()) as any;
 
 		const formData = await request.formData();

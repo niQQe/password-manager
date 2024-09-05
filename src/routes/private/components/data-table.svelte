@@ -2,7 +2,7 @@
 	import type { ItemType } from '../private.types';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
-	import { Pencil, Copy, ExternalLink, Ellipsis, Info, Trash } from 'lucide-svelte';
+	import { Pencil, Copy, ExternalLink, Ellipsis, Info, Trash, SquareAsterisk } from 'lucide-svelte';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
@@ -25,6 +25,10 @@
 	let details: ItemType = $state({
 		created_at: '2021-09-01T00:00:00.000Z',
 		updated_at: '2021-09-01T00:00:00.000Z',
+		ogData: {
+			titel: 'Google',
+			logo: 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png'
+		},
 		itemid: '123',
 		url: 'www.pornhub.com',
 		username: 'roccosifredi78',
@@ -78,11 +82,28 @@
 					{#each Object.values(privateStates.items) as item}
 						<tr>
 							<td class="flex-1 p-6 py-4 text-sm text-gray-700">
-								<div class="flex items-center gap-3">
-									<div class="h-12 w-12 rounded bg-gray-100"></div>
+								<div class="flex items-center gap-5">
+									<div
+										class="flex h-[60px] w-[60px] items-center overflow-hidden rounded"
+										style="object-fit:cover"
+									>
+										{#if item.ogData.logo}
+											<div
+												class="contain h-full w-full"
+												style={`background-image:url(${item.ogData.logo});background-size:cover; background-position:50%`}
+											></div>
+										{:else}
+											<div
+												class="flex h-full w-full"
+												style="background: linear-gradient(270deg, hsla(221, 91%, 39%, 1) 0%, hsla(221, 83%, 53%, 1) 100%);"
+											>
+												<SquareAsterisk size="26" class="m-auto text-white" />
+											</div>
+										{/if}
+									</div>
 									<div class="flex flex-col">
-										<div>{item.url}</div>
 										<div>{item.username}</div>
+										<div class="text-xs text-gray-500">{item.url}</div>
 									</div>
 								</div>
 							</td>
@@ -176,9 +197,23 @@
 		<Sheet.Content class="min-w-[520px] " side="right">
 			<Sheet.Header>
 				<div class="flex items-center gap-6">
-					<div class="h-20 w-20 rounded-md bg-gray-200"></div>
+					<div class="h-20 min-h-20 w-20 min-w-20 overflow-hidden rounded-md">
+						{#if details.ogData.logo}
+							<div
+								class="contain h-full w-full"
+								style={`background-image:url(${details.ogData.logo});background-size:cover; background-position:50%`}
+							></div>
+						{:else}
+							<div
+								class="flex h-full w-full"
+								style="background: linear-gradient(270deg, hsla(221, 91%, 39%, 1) 0%, hsla(221, 83%, 53%, 1) 100%);"
+							>
+								<SquareAsterisk size="26" class="m-auto text-white" />
+							</div>
+						{/if}
+					</div>
 					<div>
-						<div class="font-semibold">Company</div>
+						<div class="font-semibold">{details.ogData.title}</div>
 						<div class="text-gray-600">{details.url || 'www.pornhub.com'}</div>
 					</div>
 				</div>
@@ -214,7 +249,7 @@
 			</div>
 			<Sheet.Footer>
 				<form
-					action="/private?/addPassword"
+					action="/private?/addItem"
 					class="mr-auto flex flex-col gap-3"
 					method="POST"
 					use:enhance={({ formData }: { formData: FormData }) => handleDelete(formData)}
@@ -227,7 +262,7 @@
 					<Button builders={[builder]} variant="ghost" type="submit">Close</Button>
 				</Sheet.Close>
 				<form
-					action="/private?/addPassword"
+					action="/private?/addItem"
 					class="flex flex-col gap-3"
 					method="POST"
 					use:enhance={({ formData }: { formData: FormData }) => handleSaveChanges(formData)}

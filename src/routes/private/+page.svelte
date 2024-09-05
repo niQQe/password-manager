@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { ItemType } from './private.types';
 	import { onMount } from 'svelte';
-	import { decrypt } from '$lib/decryption/crypto';
+	import { decrypt } from '$lib/encryption/crypto';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { privateStates } from './store/store.svelte';
 	import DataTable from './components/data-table.svelte';
-	import AddPasswordDialog from './components/add-password.svelte';
+	import AddItemDialog from './components/add-password.svelte';
 	import LeftNav from './components/left-nav.svelte';
-	import dayjs from 'dayjs';
 
 	const { data } = $props() as any;
 
@@ -52,7 +51,7 @@
 		<LeftNav />
 		<div class="ml-[280px] flex w-full flex-col gap-3 p-6">
 			<div class="flex items-center gap-3">
-				<AddPasswordDialog />
+				<AddItemDialog />
 				<Button type="submit" variant="outline">Import</Button>
 				<Button type="submit" variant="outline">Share</Button>
 			</div>

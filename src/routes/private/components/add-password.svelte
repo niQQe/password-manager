@@ -8,6 +8,7 @@
 	import { enhance } from '$app/forms';
 	import { Plus } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
+	import axios from 'axios';
 	import dayjs from 'dayjs';
 	let open = $state(false);
 
@@ -68,7 +69,7 @@
 		</form>
 		<Dialog.Footer>
 			<form
-				action="/private?/addPassword"
+				action="/private?/addItem"
 				class="flex flex-col gap-3"
 				method="POST"
 				use:enhance={({ formData }: { formData: FormData }) => handleSavePassword(formData)}

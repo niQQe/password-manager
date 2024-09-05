@@ -36,23 +36,5 @@ export const actions: Actions = {
 		const response = await db
 			.insert(userTable)
 			.values({ email: formData.get('email'), password_hash: hash } as any);
-	},
-	savePassword: async ({ request, locals }) => {
-		const formData = await request.formData();
-
-		const formObject: Record<string, string | number> = {};
-
-		formData.forEach((value: FormDataEntryValue, key: string) => {
-			formObject[key] = value as string;
-		});
-
-		const hash = await deriveKey(formObject.password as string);
-		await verifyPassword(hash, formObject.password as string);
-
-		const newPassword = {
-			password: formObject.password as string
-		};
-
-		// const response = await db.insert(passwordsTable).values({ ...newPassword } as any);
 	}
 };

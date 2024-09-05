@@ -1,6 +1,7 @@
 import type { StoreType } from '../private.types';
-import { encrypt } from '$lib/decryption/crypto';
+import { encrypt } from '$lib/encryption/crypto';
 import { nanoid } from 'nanoid';
+import axios from 'axios';
 import dayjs from 'dayjs';
 export const privateStates: StoreType = $state({
 	items: {},
@@ -8,20 +9,25 @@ export const privateStates: StoreType = $state({
 });
 
 export async function saveItem(formData: FormData, form: any) {
-	// Since post and put requests are handled by the same function, we need to check if the item already exists
-	// If it does not exist, we need to generate a new itemid
-
 	const item = privateStates.items[form.itemid];
 
+	const OGData = await fetch(`/api/website_info?url=${form.url}`);
+	const OGDataJson = await OGData.json();
+	console.log(OGDataJson);
+
+	// Since post and put requests are handled by the same function, we need to check if the item already exists
+	// If it does not exist, we need to generate a new itemid
 	if (item) {
 		privateStates.items[form.itemid] = {
 			...form,
+			ogData: OGDataJson,
 			created_at: item.created_at,
 			updated_at: dayjs().toDate()
 		};
 	} else {
 		privateStates.items[nanoid()] = {
 			...form,
+			ogData: OGDataJson,
 			itemid: nanoid(),
 			created_at: dayjs().toDate(),
 			updated_at: dayjs().toDate()

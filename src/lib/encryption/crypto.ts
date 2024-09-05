@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 
-async function deriveKey(pass: string, salt: string, argon2: any) {
+export async function deriveKey(pass: string, salt: string, argon2: any) {
 	const { encoded } = await argon2.hash({
 		salt: Buffer.from(salt),
 		raw: false,

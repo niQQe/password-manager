@@ -6,10 +6,10 @@
 <div class="fixed left-0 top-0 flex h-full w-[280px] flex-col items-start gap-3 p-6">
 	<div class="flex flex-col gap-3">
 		<div class="flex h-[40px] items-center gap-3 text-lg font-semibold text-gray-700">
-			<div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600">
+			<div class="flex h-8 w-8 items-center justify-center rounded-md " style="background: linear-gradient(270deg, hsla(221, 91%, 39%, 1) 0%, hsla(221, 83%, 53%, 1) 100%);">
 				<SquareAsterisk size="20" class="text-white" />
 			</div>
-			Dashving
+			CipherNest
 		</div>
 		<div class="relative">
 			<Search size="18" class="absolute left-3 top-1/2 -translate-y-1/2 transform" />

@@ -15,6 +15,7 @@ export type ItemType = {
 	company_name: string;
 	updated_at: string;
 	ogData: OGDataType;
+	favorite: boolean;
 	itemid: string;
 	url: string;
 	username: string;

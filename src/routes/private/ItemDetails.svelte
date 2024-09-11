@@ -121,7 +121,7 @@
 	}
 </script>
 
-<div class="flex flex-1 max-w-[650px] flex-col bg-[#0a0a0a] p-6">
+<div class="flex max-w-[650px] flex-1 flex-col bg-[#0a0a0a] p-6 z-[20]">
 	<div class="relative flex flex-1 flex-col gap-6">
 		<div class="absolute right-10 top-10 flex items-center gap-3">
 			<button
@@ -160,7 +160,7 @@
 			<div class="flex flex-col">
 				<div class="flex max-w-[200px] items-center gap-3 truncate text-3xl font-bold">
 					{item.company_name}
-					<Star size="22" fill="#fff" />
+					<Star size="22" fill={item.favorite ? '#fff' : 'transparent'} />
 				</div>
 				<div class="text-lg text-white/80">
 					{item.url}

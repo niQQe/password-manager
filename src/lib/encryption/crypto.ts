@@ -1,8 +1,6 @@
 import { Buffer } from 'buffer';
 
 export async function deriveKey(pass: string, salt: string, argon2: any) {
-	console.log('argon');
-	console.log(argon2);
 	const { encoded } = await argon2.hash({
 		salt: Buffer.from(salt),
 		raw: false,
@@ -13,7 +11,6 @@ export async function deriveKey(pass: string, salt: string, argon2: any) {
 	});
 
 	const [, , , , , key] = encoded.split('$');
-	console.log(encoded);
 	return key;
 }
 
@@ -93,8 +90,6 @@ export async function decrypt(
 	const rawKey = useDeriveKey
 		? await deriveKey(masterPassword, salt, argon2)
 		: new TextEncoder().encode(masterPassword);
-
-	console.log(rawKey);
 
 	const bufferedKey = Buffer.from(rawKey, 'base64');
 

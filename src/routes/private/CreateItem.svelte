@@ -45,7 +45,9 @@
 			<Plus size="24" class="m-auto text-white" stroke="0.2" />
 		</button>
 	</Dialog.Trigger>
-	<Dialog.Content class="min-w-[500px] p-12 !rounded-3xl border-white/10  bg-[#0a0a0a] sm:max-w-[425px]">
+	<Dialog.Content
+		class="min-w-[500px] !rounded-3xl border-white/10 bg-[#0a0a0a]  p-12 sm:max-w-[425px]"
+	>
 		<Dialog.Header class="mb-4">
 			<div class="flex items-center gap-6">
 				<div class="flex h-[80px] w-[80px] rounded-full">

@@ -63,7 +63,7 @@
 			<div class="text-sm font-normal tracking-wide text-white/50">Expiration time</div>
 			<div class="flex">
 				<Select.Root portal={null}>
-					<Select.Trigger class="w-[180px] border-none bg-[#292929]">
+					<Select.Trigger class="w-[180px] border-none bg-[#292929] hover:bg-white/20 transition-all">
 						<Select.Value placeholder="No limit" />
 					</Select.Trigger>
 					<Select.Content class="border-none bg-[#292929] ">
@@ -86,7 +86,7 @@
 			<div class="flex gap-3">
 				{#each Object.values(linkUsesOptions) as value, label}
 					<button
-						class={` ${selectedLinkUses === value ? 'bg-white/30' : ''} min-w-[40px] rounded-md bg-[#292929] p-2 text-sm`}
+						class={` ${selectedLinkUses === value ? 'bg-white/30' : ''} min-w-[40px] rounded-md bg-[#292929] p-2 text-sm hover:bg-white/20 transition-all`}
 						onclick={() => (selectedLinkUses = value)}>{value}</button
 					>
 				{/each}

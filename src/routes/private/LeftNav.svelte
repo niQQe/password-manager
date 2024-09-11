@@ -5,7 +5,7 @@
 	const { email } = $props() as any;
 </script>
 
-<div class="flex min-h-[800px] w-[435px] flex-col gap-8 bg-[#191919] p-7">
+<div class="flex min-h-[800px] w-[435px] flex-col gap-8 bg-[#191919] p-7 z-[20]">
 	<div class="flex justify-center pt-4">
 		<div class="flex h-[40px] items-center gap-3 text-2xl font-semibold text-white">
 			<div

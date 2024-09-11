@@ -5,7 +5,6 @@ import { eq } from 'drizzle-orm';
 import dayjs from 'dayjs';
 
 function getExpireDate(value: string) {
-	const date = new Date();
 	switch (value) {
 		case '1':
 			return dayjs().add(1, 'minute').toDate();
@@ -85,11 +84,5 @@ export const actions: Actions = {
 			console.log('Error creating shared link');
 			console.log(e);
 		}
-
-		// link will be [url]/shared/[id]
-		// id that will be generated will contain both the linkid and the key,
-		// example [url]/share/90asjdaS!2Nsb21a232lJhba1
-		// the first part is the linkid and the second part is the key. 90asjdaS!2N = link to be inserted in the db, sb21a232lJhba1 = key to be used to decrypt the data
-		// Only the linkid and the encrypted data is stored in the db.
 	}
 };

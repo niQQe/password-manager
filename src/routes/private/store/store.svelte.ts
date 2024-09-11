@@ -15,6 +15,7 @@ export const privateStates: StoreType = $state({
 			description: ''
 		},
 		itemid: '123',
+		favorite: false,
 		url: 'www.pornhub.com',
 		username: 'roccosifredi78',
 		password: '12345678'
@@ -38,6 +39,7 @@ export async function saveItem(formData: FormData, form: any) {
 		privateStates.items[form.itemid] = {
 			...form,
 			ogData: form.ogData,
+			favorite: form.favorite,
 			created_at: item.created_at,
 			updated_at: dayjs().toDate()
 		};
@@ -46,6 +48,7 @@ export async function saveItem(formData: FormData, form: any) {
 			...form,
 			ogData: OGDataJson,
 			itemid: nanoid(),
+			favorite: false,
 			created_at: dayjs().toDate(),
 			updated_at: dayjs().toDate()
 		};

@@ -60,7 +60,6 @@ export const actions: Actions = {
 	},
 	signIn: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
-		console.log(formData.get('master_password'));
 		const { data, error } = await supabase.auth.signInWithPassword({
 			email: formData.get('email') as string,
 			password: formData.get('master_password') as string

@@ -1,12 +1,12 @@
 <script>
 	import '../app.css';
-	import '@fontsource/geist-sans';
-	import '@fontsource/geist-sans/700.css';
-	import '@fontsource/geist-sans/600.css';
-	import '@fontsource/geist-sans/500.css';
-	import '@fontsource/geist-sans/400.css';
-
 	import { goto, invalidate } from '$app/navigation';
+
+	import { onMount } from 'svelte';
+
+	onMount(async () => {
+		if (!window.argon2) await import('argon2-browser');
+	});
 
 	const { data: propsData, children } = $props();
 </script>
@@ -16,7 +16,4 @@
 </div>
 
 <style>
-	:global(body) {
-		font-family: 'Geist Sans', sans-serif;
-	}
 </style>

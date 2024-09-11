@@ -3,7 +3,9 @@
 	import { Toaster } from '$lib/components/ui/sonner';
 	const { data: propsData, children } = $props();
 	const { supabase, session } = propsData;
-
+	import LeftNav from './LeftNav.svelte';
+	import TopHeader from './TopHeader.svelte';
+	import Content from './Content.svelte';
 	let isLoggedIn = $state(false);
 
 	$effect(() => {
@@ -28,11 +30,18 @@
 	});
 </script>
 
-<div class="h-full w-full">
+<div class="flex h-[100vh] w-full">
 	<Toaster />
-	{#if isLoggedIn}
-		{@render children()}
-	{:else}
-		Loading...
-	{/if}
+	<div class="flex w-full overflow-hidden">
+		{#if isLoggedIn}
+			<LeftNav email={propsData.user?.email} />
+			<!-- Content -->
+			<div class="flex w-full flex-col gap-3 bg-[#121212]">
+				<!-- <TopHeader /> -->
+				{@render children()}
+			</div>
+		{:else}
+			Loading...
+		{/if}
+	</div>
 </div>

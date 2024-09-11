@@ -247,7 +247,7 @@
                             Module._argon2_error_message(res)
                         );
                     }
-                } catch (e) {}
+                } catch (e) { }
                 result = { message: err, code: res };
             }
             try {
@@ -261,7 +261,7 @@
                 if (secret) {
                     Module._free(secret);
                 }
-            } catch (e) {}
+            } catch (e) { }
             if (err) {
                 throw result;
             } else {
@@ -331,13 +331,13 @@
                             Module._argon2_error_message(res)
                         );
                     }
-                } catch (e) {}
+                } catch (e) { }
                 result = { message: err, code: res };
             }
             try {
                 Module._free(pwd);
                 Module._free(enc);
-            } catch (e) {}
+            } catch (e) { }
             if (err) {
                 throw result;
             } else {

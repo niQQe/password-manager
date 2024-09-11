@@ -1,11 +1,13 @@
 import { json } from '@sveltejs/kit';
 
 export async function GET({ url, locals }) {
+	const { user } = (await locals.safeGetSession()) as any;
+	if (!user) return json({ message: 'Unauthorized', status: 401 });
+
 	const _url = url.searchParams.get('url');
 	try {
 		const response = await fetch(_url);
 		const html = await response.text();
-		console.log(html);
 		const ogTitle = html.match(/<meta property="og:title" content="(.*?)"/)?.[1];
 		const ogDescription = html.match(/<meta property="og:description" content="(.*?)"/)?.[1];
 		const ogImage = html.match(/<meta property="og:image" content="(.*?)"/)?.[1];
@@ -17,11 +19,8 @@ export async function GET({ url, locals }) {
 			description: ogDescription
 		};
 
-		console.log(webdata);
-
 		return json(webdata);
-	} catch (error) {
-		console.error('Error fetching HTML:', error);
-		throw error; // Re-throw the error after logging it
+	} catch (error: any) {
+		return json({ error: error?.message });
 	}
 }

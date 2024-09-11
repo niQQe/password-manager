@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer';
 
 export async function deriveKey(pass: string, salt: string, argon2: any) {
+	console.log('argon');
+	console.log(argon2);
 	const { encoded } = await argon2.hash({
 		salt: Buffer.from(salt),
 		raw: false,
@@ -11,17 +13,21 @@ export async function deriveKey(pass: string, salt: string, argon2: any) {
 	});
 
 	const [, , , , , key] = encoded.split('$');
+	console.log(encoded);
 	return key;
 }
 
 export async function encrypt(
 	{ masterPassword, data, salt }: { masterPassword: string; data: string; salt: string },
 	argon2: any,
-	crypto: any
+	crypto: any,
+	useDeriveKey: boolean
 ) {
-	const derivedKey = await deriveKey(masterPassword, salt, argon2);
+	const rawKey = useDeriveKey
+		? await deriveKey(masterPassword, salt, argon2)
+		: new TextEncoder().encode(masterPassword);
 
-	const bufferedKey = Buffer.from(derivedKey, 'base64');
+	const bufferedKey = Buffer.from(rawKey, 'base64');
 
 	const iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -77,15 +83,20 @@ export async function decrypt(
 		tagBase64: string;
 	},
 	argon2: any,
-	crypto: any
+	crypto: any,
+	useDeriveKey: boolean
 ) {
 	const iv = Uint8Array.from(atob(ivBase64), (c) => c.charCodeAt(0));
 	const tag = Uint8Array.from(atob(tagBase64), (c) => c.charCodeAt(0));
 	const encryptedPassword = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
 
-	const derivedKey = await deriveKey(masterPassword, salt, argon2);
+	const rawKey = useDeriveKey
+		? await deriveKey(masterPassword, salt, argon2)
+		: new TextEncoder().encode(masterPassword);
 
-	const bufferedKey = Buffer.from(derivedKey, 'base64');
+	console.log(rawKey);
+
+	const bufferedKey = Buffer.from(rawKey, 'base64');
 
 	const algorithm = {
 		name: 'AES-GCM',

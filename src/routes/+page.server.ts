@@ -19,22 +19,5 @@ export const actions: Actions = {
 		});
 
 		return { emailExists: user.length > 0 };
-	},
-	signUp: async ({ request, locals: { supabase } }) => {
-		const formData = await request.formData();
-
-		const { data, error } = await supabase.auth.signUp({
-			email: formData.get('email') as string,
-			password: formData.get('master_password') as string
-		});
-
-		if (error) {
-			return { error: error.message };
-		}
-
-		const hash = await deriveKey(formData.get('master_password') as string);
-		const response = await db
-			.insert(userTable)
-			.values({ email: formData.get('email'), password_hash: hash } as any);
 	}
 };

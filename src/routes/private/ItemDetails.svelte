@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { Star, Copy, Eye, EyeOff, SquareAsterisk, Trash, Check } from 'lucide-svelte';
+	import { Star, Copy, Eye, EyeOff, Trash, Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import { deleteItem, privateStates, saveItem } from './store/store.svelte';
 	import { toast } from 'svelte-sonner';
-	import ShareLink from './ShareLink.svelte';
-	import { PasswordMeter } from 'password-meter';
-	import type { IResult } from 'password-meter';
 	import { copyToClipboard } from '$lib/utils/';
+	import ShareLink from './ShareLink.svelte';
+	import PasswordStrengthMeasurer from './PasswordStrengthMeasurer.svelte';
 	import dayjs from 'dayjs';
 
 	const {
@@ -29,44 +28,6 @@
 		website: false
 	}) as Record<string, boolean>;
 
-	type strengthDictType = {
-		veryWeak: { status: string; class: string };
-		weak: { status: string; class: string };
-		medium: { status: string; class: string };
-		strong: { status: string; class: string };
-		veryStrong: { status: string; class: string };
-		perfect: { status: string; class: string };
-	};
-
-	type StrengthKey = keyof strengthDictType;
-
-	let strengthDict: strengthDictType = {
-		veryWeak: {
-			status: 'Very weak',
-			class: 'text-red-500'
-		},
-		weak: {
-			status: 'Weak',
-			class: 'text-orange-500'
-		},
-		medium: {
-			status: 'Decent',
-			class: 'text-yellow-500'
-		},
-		strong: {
-			status: 'Strong',
-			class: 'text-lime-500'
-		},
-		veryStrong: {
-			status: 'Very strong',
-			class: 'text-green-500'
-		},
-		perfect: {
-			status: 'Ultimate!',
-			class: 'text-amber-500 glow'
-		}
-	};
-
 	$effect(() => {
 		item = privateStates.itemDetails;
 		showPassword = false;
@@ -77,10 +38,6 @@
 	$effect(() => {
 		open = openItemDetails;
 	});
-
-	const passwordStatus: () => IResult = $derived(() =>
-		new PasswordMeter().getResult(item.password)
-	);
 
 	async function handleDeleteItem(formData: FormData) {
 		await deleteItem(formData, item.itemid);
@@ -121,7 +78,7 @@
 	}
 </script>
 
-<div class="flex max-w-[650px] flex-1 flex-col bg-[#0a0a0a] p-6 z-[20]">
+<div class="z-[20] flex max-w-[650px] flex-1 flex-col bg-[#0a0a0a] p-6">
 	<div class="relative flex flex-1 flex-col gap-6">
 		<div class="absolute right-10 top-10 flex items-center gap-3">
 			<button
@@ -143,27 +100,18 @@
 		</div>
 		<div class="flex w-full items-center gap-6 p-4">
 			<div class="h-[80px] w-[80px] overflow-hidden rounded-full">
-				{#if item.ogData.logo}
-					<div
-						class="contain h-full w-full"
-						style={`background-image:url(${item.ogData.logo});background-size:cover; background-position:50%`}
-					></div>
-				{:else}
-					<div
-						class="flex h-full w-full rounded-full border-4 border-[#153029]"
-						style="background:linear-gradient(34deg, rgb(66 142 219) 0%, rgb(80 212 146) 100%)"
-					>
-						<SquareAsterisk size="24" class="m-auto text-white" />
-					</div>
-				{/if}
+				<div
+					class="contain h-full w-full"
+					style={`background-image:url('https://img.logo.dev/${new URL(item.url).hostname}?token=pk_JJAmWTSNT82ETdhZr1Ab8w');background-size:contain;background-size:80px; background-position:50%`}
+				></div>
 			</div>
 			<div class="flex flex-col">
-				<div class="flex max-w-[200px] items-center gap-3 truncate text-3xl font-bold">
+				<div class="max-w-250px] flex items-center gap-3 truncate text-3xl font-bold">
 					{item.company_name}
 					<Star size="22" fill={item.favorite ? '#fff' : 'transparent'} />
 				</div>
 				<div class="text-lg text-white/80">
-					{item.url}
+					{item.url.replace('https://', '')}
 				</div>
 			</div>
 		</div>
@@ -274,60 +222,15 @@
 						<div class="rounded bg-[#2b2b2b] p-1.5 px-3 text-xs text-yellow-600">Default</div>
 					</div>
 				</form>
-				<div class="flex items-center gap-[40px]">
-					<div class="relative flex h-[160px] w-[160px]">
-						<div class="m-auto text-[32px] font-medium">{passwordStatus().percent}%</div>
-						<div
-							class="absolute left-[3px] top-[3px] h-[154px] w-[154px] rounded-full border-[14px] border-green-600/[5%]"
-						></div>
-						<svg
-							width="160"
-							height="160"
-							viewBox="0 0 160 160"
-							style="transform: rotate(-90deg)"
-							class="absolute left-0 top-0"
-						>
-							<circle
-								r="70"
-								cx="80"
-								cy="80"
-								fill="transparent"
-								stroke="url(#gradient)"
-								class="transition-all duration-1000"
-								stroke-linecap="round"
-								stroke-width="14px"
-								stroke-dasharray="439.6px"
-								stroke-dashoffset={439.6 * (1 - passwordStatus().percent / 100)}
-							></circle>
-							<defs>
-								<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-									<stop offset="0%" stop-color="#05a" />
-									<stop offset="100%" stop-color="#0a5" />
-								</linearGradient>
-							</defs>
-						</svg>
-					</div>
-					<div class="flex flex-col gap-1 tracking-wide">
-						<div class="text-[20px]">
-							Password score: {passwordStatus().score}<span></span>
-						</div>
-						<div class="text-widest text-sm">
-							Password strength: <span
-								class={`${strengthDict[passwordStatus().status as StrengthKey].class} `}
-								>{strengthDict[passwordStatus().status as StrengthKey].status}</span
-							>
-						</div>
-						<div class="text-wider text-sm font-semibold text-blue-400">Get new suggestion?</div>
-					</div>
-				</div>
-				<div class="flex flex-col gap-6">
+				<PasswordStrengthMeasurer password={item.password} />
+				<div class="flex flex-col gap-4">
 					<div class="flex flex-col gap-1">
 						<div class="text-sm font-normal tracking-wide text-white/50">Last Modified</div>
-						<div class="text-md font-normal tracking-wide text-white/80">{item.updated_at}</div>
+						<div class="text-md font-normal tracking-wide text-white/80">{dayjs(item.updated_at).format('MMM DD, YYYY hh:mm A')}</div>
 					</div>
 					<div class="flex flex-col gap-1">
 						<div class="text-sm font-normal tracking-wide text-white/50">Created</div>
-						<div class="text-md font-normal tracking-wide text-white/80">{item.created_at}</div>
+						<div class="text-md font-normal tracking-wide text-white/80">{dayjs(item.created_at).format('MMM DD, YYYY hh:mm A')}</div>
 					</div>
 				</div>
 			</div>
@@ -357,13 +260,5 @@
 <style>
 	input {
 		background: transparent;
-	}
-
-	.glow {
-		text-align: center;
-		-webkit-animation: glow 1s ease-in-out infinite alternate;
-		-moz-animation: glow 1s ease-in-out infinite alternate;
-		animation: glow 1s ease-in-out infinite alternate;
-		text-shadow: 0 0 8px #ebcf02;
 	}
 </style>

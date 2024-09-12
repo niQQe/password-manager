@@ -78,7 +78,7 @@
 							onfocus={() => (inputFocused = true)}
 							onblur={() => (inputFocused = false)}
 							placeholder="Search for password"
-							class="w-full bg-transparent"
+							class="w-full bg-transparent h-full"
 							type="text"
 						/>
 						{#if searchValue.length > 0}

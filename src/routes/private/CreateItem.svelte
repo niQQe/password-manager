@@ -1,19 +1,25 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 	import type { ItemType } from './private.types';
-	import { SquareAsterisk } from 'lucide-svelte';
+	import { SquareAsterisk, RectangleEllipsis, Eye, EyeOff } from 'lucide-svelte';
+	import { generatePassword } from '$lib/utils/';
 	import { saveItem } from './store/store.svelte';
 	import { enhance } from '$app/forms';
 	import { Plus } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
+	import PasswordStrengthMeasurer from './PasswordStrengthMeasurer.svelte';
+	import { privateStates } from './store/store.svelte';
 	import dayjs from 'dayjs';
 
 	let open = $state(false);
+	let showPassword = $state(false);
+	let urlAlreadyExist = $state(false);
 
 	let form = $state({
 		itemid: '',
 		company_name: '',
-		url: 'www.example.com',
+		url: '',
 		username: '',
 		password: ''
 	}) as ItemType;
@@ -24,6 +30,22 @@
 		toast.success('Item saved', {
 			description: dayjs().format('D MMM, YYYY HH:mm')
 		});
+	}
+
+	function handleUrlInputBlur() {
+		if (!form.url.startsWith('http://') && !form.url.startsWith('https://') && form.url !== '') {
+			form.url = `https://${form.url}`;
+		}
+
+		urlAlreadyExist = Object.values(privateStates.items)
+			.map((i) => i.url)
+			.includes(form.url);
+	}
+
+	function handleGeneratePassword(e: MouseEvent) {
+		e.preventDefault();
+		form.password = generatePassword();
+		console.log('kärs?');
 	}
 
 	function setOpen(value: boolean) {
@@ -45,9 +67,7 @@
 			<Plus size="24" class="m-auto text-white" stroke="0.2" />
 		</button>
 	</Dialog.Trigger>
-	<Dialog.Content
-		class="min-w-[500px] !rounded-3xl border-white/10 bg-[#0a0a0a]  p-12 sm:max-w-[425px]"
-	>
+	<Dialog.Content class="min-w-[600px] border-white/[2%] bg-[#0f0f0f]  p-12 sm:max-w-[425px]">
 		<Dialog.Header class="mb-4">
 			<div class="flex items-center gap-6">
 				<div class="flex h-[80px] w-[80px] rounded-full">
@@ -59,108 +79,110 @@
 					</div>
 				</div>
 				<div class="flex flex-col">
-					<Dialog.Title class="text-2xl">Company</Dialog.Title>
-					<div class="text-white/80">john@doe.com</div>
+					<Dialog.Title class="text-2xl"
+						>{form.company_name === '' ? 'Company' : form.company_name}</Dialog.Title
+					>
+					<div class="text-white/80">{form.url === '' ? 'www.example.com' : form.url}</div>
 				</div>
 			</div>
 		</Dialog.Header>
 		<div class="flex flex-col gap-10">
-			<form class="flex flex-col gap-6">
+			<form
+				action="/private?/modifyItem"
+				method="POST"
+				class="flex flex-col gap-6"
+				use:enhance={({ formData }) => handleSavePassword(formData)}
+			>
 				<div class="relative flex flex-col">
-					<label for="company" class="text-sm text-white/70">Company</label>
+					<label for="company_form" class="text-sm text-white/70">Company</label>
 					<input
 						placeholder="Company name"
+						required
 						class="h-[40px] border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
 						bind:value={form.company_name}
-						id="company"
+						id="company_form"
 						type="text"
 					/>
 				</div>
 				<div class="relative flex flex-col">
-					<label for="website" class="text-sm text-white/70">Website</label>
+					<label for="website_form" class="text-sm text-white/70">Website</label>
 					<input
 						placeholder="www.example.com"
 						bind:value={form.url}
+						onblur={() => handleUrlInputBlur()}
+						required
 						class="h-[40px] border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
-						id="website"
-						type="text"
+						id="website_form"
+						type="url"
 					/>
+					{#if urlAlreadyExist}
+						<p class="text-xs mt-[5px] font-medium text-red-500">This website is already added.</p>
+					{/if}
 				</div>
 				<div class="relative flex flex-col">
 					<label for="username" class="text-sm text-white/70">Email or username</label>
 					<input
 						bind:value={form.username}
+						required
 						placeholder="john@doe.se"
 						class="h-[40px] border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
 						id="username"
+						autocomplete="username"
 						type="text"
 					/>
 				</div>
 				<div class="relative flex flex-col">
-					<label for="password" class="text-sm text-white/70">Password</label>
-					<input
-						placeholder="Enter your password"
-						bind:value={form.password}
-						class="h-[40px] border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
-						id="password"
-						type="password"
-					/>
-				</div>
-			</form>
-			<div class="flex items-center gap-[30px]">
-				<div class="relative flex h-[120px] w-[120px]">
-					<div class="m-auto text-[26px] font-medium">82%</div>
-					<div
-						class="absolute left-[+px] top-[0px] h-[120px] w-[120px] rounded-full border-[14px] border-green-600/[5%]"
-					></div>
-					<svg
-						width="120"
-						height="120"
-						viewBox="0 0 160 160"
-						style="transform: rotate(-90deg)"
-						class="absolute left-0 top-0"
-					>
-						<circle
-							r="70"
-							cx="80"
-							cy="80"
-							fill="transparent"
-							stroke="url(#gradient)"
-							stroke-linecap="round"
-							stroke-width="14px"
-							stroke-dasharray="439.6px"
-							stroke-dashoffset="109.9px"
-						></circle>
-						<defs>
-							<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-								<stop offset="0%" stop-color="#05a" />
-								<stop offset="100%" stop-color="#0a5" />
-							</linearGradient>
-						</defs>
-					</svg>
-				</div>
-				<div class="flex flex-col gap-1 tracking-wide">
-					<div class="text-[18px]">Password score: 82%</div>
-					<div class="text-widest text-sm text-white/60">
-						Password strength: <span class="text-green-300">Good</span>
+					<label for="password_form" class="text-sm text-white/70">Password</label>
+					<div class="relative w-full">
+						<div class="absolute right-0 top-[3px]">
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										onclick={(e) => handleGeneratePassword(e)}
+										class="flex border-0 bg-transparent !p-0 text-white/70 hover:text-white"
+									>
+										<RectangleEllipsis size="24" class="right-0 top-0 m-auto " stroke="0.2" />
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content class=" border-0 bg-black">
+									<p class="flex min-w-[130px] text-center text-sm">Generate password</p>
+								</Tooltip.Content>
+							</Tooltip.Root>
+						</div>
+						{#if !showPassword}
+							<Eye
+								onclick={() => (showPassword = true)}
+								size="20"
+								class="absolute right-9 top-[5px] cursor-pointer text-white/80 hover:text-white"
+							/>
+						{:else}
+							<EyeOff
+								onclick={() => (showPassword = false)}
+								size="20"
+								class="absolute right-9 top-[5px] cursor-pointer text-white/80 hover:text-white"
+							/>
+						{/if}
+						<input
+							placeholder="Enter your password"
+							required
+							bind:value={form.password}
+							class="h-[40px] w-full border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
+							id="password_form"
+							autocomplete="new-password"
+							type={showPassword ? 'text' : 'password'}
+						/>
 					</div>
-					<div class="text-wider text-sm font-semibold text-blue-400">Get new suggestion?</div>
 				</div>
-			</div>
-		</div>
-		<Dialog.Footer class="mt-4">
-			<form
-				action="/private?/modifyItem"
-				method="POST"
-				use:enhance={({ formData }) => handleSavePassword(formData)}
-			>
-				<button
-					type="submit"
-					class="text-md rounded-lg p-3 px-4 font-medium"
-					style="background:linear-gradient(34deg, rgb(66 142 219) 0%, rgb(80 212 146) 100%)"
-					>Save password</button
-				>
+				<PasswordStrengthMeasurer class="mt-4" password={form.password} />
+				<div class="flex justify-end">
+					<button
+						type="submit"
+						class="text-md rounded-lg p-3 px-4 font-medium"
+						style="background:linear-gradient(34deg, rgb(66 142 219) 0%, rgb(80 212 146) 100%)"
+						>Save password</button
+					>
+				</div>
 			</form>
-		</Dialog.Footer>
+		</div>
 	</Dialog.Content>
 </Dialog.Root>

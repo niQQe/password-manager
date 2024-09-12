@@ -20,6 +20,11 @@ input:focus {
 	outline: none !important;
 }
 
+input::placeholder {
+	color: #666666;
+	font-weight: 500;
+}
+
 /* width */
 ::-webkit-scrollbar {
 	width: 8px;

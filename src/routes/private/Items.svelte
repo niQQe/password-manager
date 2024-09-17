@@ -13,9 +13,11 @@
 
 	dayjs.extend(relativeTime);
 	let isScrolling = $state(false);
-	let itemWrapper: HTMLDivElement;
+	let itemWrapper: HTMLDivElement | null = $state(null);
 	let inputFocused = $state(false);
 	let searchValue = $state('');
+
+	const noItems = $derived(() => !Object.keys(privateStates.items).length);
 
 	const derivedItems = $derived(() => {
 		const searchLower = searchValue.toLowerCase();
@@ -47,12 +49,9 @@
 	});
 
 	onMount(() => {
+		if (itemWrapper === null) return;
 		itemWrapper.addEventListener('scroll', () => {
-			if (itemWrapper.scrollTop > 30) {
-				isScrolling = true;
-			} else {
-				isScrolling = false;
-			}
+			isScrolling = itemWrapper!.scrollTop > 30;
 		});
 	});
 </script>
@@ -78,7 +77,7 @@
 							onfocus={() => (inputFocused = true)}
 							onblur={() => (inputFocused = false)}
 							placeholder="Search for password"
-							class="w-full bg-transparent h-full"
+							class="h-full w-full bg-transparent"
 							type="text"
 						/>
 						{#if searchValue.length > 0}
@@ -94,34 +93,47 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-1 flex-col overflow-auto p-4" bind:this={itemWrapper}>
-			{#if derivedItems().favorites.length > 0}
-				<div class="px-4 py-4 pt-2 text-sm font-extralight uppercase tracking-wide text-white/60">
-					Favorites
-				</div>
-				<div class="mb-3 flex flex-col">
-					{#each derivedItems().favorites as item}
-						<ItemCard {item} />
-					{/each}
-				</div>
-			{/if}
-			{#if derivedItems().sorted.length > 0}
-				<div class="px-4 py-4 pt-2 text-sm font-extralight uppercase tracking-wide text-white/60">
-					Sorted by newest
-				</div>
-			{/if}
-			{#each derivedItems().sorted as item}
-				<ItemCard {item} />
-			{/each}
-			{#if derivedItems().favorites.length === 0 && derivedItems().sorted.length === 0}
-				<div class="flex w-full flex-1">
-					<div class="m-auto flex flex-col items-center justify-center gap-3 text-white/60">
-						<div class="text-4xl"><Search size="30" class="text-[#4cc3a4]" /></div>
-						<div class="text-xl">No items found</div>
+		{#if noItems()}
+			<div class="flex h-full w-full">
+				<div class="m-auto flex flex-col gap-2">
+					<div class="border-b border-white/10 pb-3 text-center text-2xl font-bold">
+						No passwords added yet!
+					</div>
+					<div class="text-center text-white/70">
+						Use the plus [+] button at the top to add some!
 					</div>
 				</div>
-			{/if}
-		</div>
+			</div>
+		{:else}
+			<div class="flex flex-1 flex-col overflow-auto p-4" bind:this={itemWrapper}>
+				{#if derivedItems().favorites.length > 0}
+					<div class="px-4 py-4 pt-2 text-sm font-extralight uppercase tracking-wide text-white/60">
+						Favorites
+					</div>
+					<div class="mb-3 flex flex-col">
+						{#each derivedItems().favorites as item}
+							<ItemCard {item} />
+						{/each}
+					</div>
+				{/if}
+				{#if derivedItems().sorted.length > 0}
+					<div class="px-4 py-4 pt-2 text-sm font-extralight uppercase tracking-wide text-white/60">
+						Sorted by newest
+					</div>
+				{/if}
+				{#each derivedItems().sorted as item}
+					<ItemCard {item} />
+				{/each}
+				{#if derivedItems().favorites.length === 0 && derivedItems().sorted.length === 0}
+					<div class="flex w-full flex-1">
+						<div class="m-auto flex flex-col items-center justify-center gap-3 text-white/60">
+							<div class="text-4xl"><Search size="30" class="text-[#4cc3a4]" /></div>
+							<div class="text-xl">No items found</div>
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	</div>
 </div>
 

@@ -1,5 +1,5 @@
+import type { LayoutServerLoad, Actions } from './$types';
 import { redirect } from '@sveltejs/kit';
-import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -10,17 +10,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	await locals.supabase.auth.refreshSession();
 	const { data: mfaData } = await locals.supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-
 	if (mfaData?.currentLevel === 'aal2') {
-		return {
-			data: user
-		};
-	}
-
-	if (mfaData?.currentLevel === 'aal1' && mfaData.nextLevel === 'aal2') {
-		redirect(303, '/auth/mfa/auth');
-	}
-	if (mfaData?.currentLevel === 'aal1' && mfaData.nextLevel === 'aal1') {
-		redirect(303, '/auth/mfa/enroll');
+		redirect(303, '/private');
 	}
 };

@@ -1,11 +1,56 @@
 <script lang="ts">
-	import { CreditCard, FileKey, Settings, User, SquareAsterisk, Shield } from 'lucide-svelte';
-	import { Input } from '$lib/components/ui/input/index.js';
+	import {
+		CreditCard,
+		FileKey,
+		Settings,
+		ChevronDown,
+		Activity,
+		User,
+		SquareAsterisk,
+		Shield,
+		LogOut
+	} from 'lucide-svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { goto } from '$app/navigation';
+	import type { MenuItemType } from './private.types';
 
-	const { email } = $props() as any;
+	import { page } from '$app/stores';
+	const { email, supabase } = $props() as any;
+
+	const menuItems: MenuItemType[] = $state([
+		{
+			icon: Shield,
+			text: 'Passwords',
+			route: '/private'
+		},
+		{
+			icon: Activity,
+			text: 'Password health',
+			route: '/private/password_health'
+		},
+		{
+			icon: FileKey,
+			text: 'Secure notes',
+			route: ''
+		},
+		{
+			icon: CreditCard,
+			text: 'Bank cards',
+			route: ''
+		},
+		{
+			icon: Settings,
+			text: 'Settings',
+			route: '/private/settings'
+		}
+	]);
+
+	async function handleLogout() {
+		await supabase.auth.signOut();
+	}
 </script>
 
-<div class="flex min-h-[800px] w-[435px] flex-col gap-8 bg-[#191919] p-7 z-[20]">
+<div class="z-[20] flex min-h-[800px] w-[435px] flex-col gap-8 bg-[#191919] p-7">
 	<div class="flex justify-center pt-4">
 		<div class="flex h-[40px] items-center gap-3 text-2xl font-semibold text-white">
 			<div
@@ -17,37 +62,52 @@
 			CipherNest
 		</div>
 	</div>
-	<div class="px-3">
-		<div class="flex items-center gap-3 border-b border-white/15 pb-6">
-			<div class="flex h-8 w-8 rounded-full ring-2 ring-[#4cc3a4]">
-				<User size="20" class="m-auto" />
-			</div>
-			<div class="font-bold">
-				{email}
-			</div>
-		</div>
+	<div class="w-full">
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger
+				class="h-[60px] w-full rounded-xl  border-none bg-transparent px-3 transition-all hover:bg-[#29292992]"
+			>
+				<div class="flex items-center gap-3">
+					<div class="flex h-8 w-8 rounded-full ring-2 ring-[#4cc3a4]">
+						<User size="20" class="m-auto" />
+					</div>
+					<div class="font-bold">
+						{email}
+					</div>
+					<ChevronDown class="ml-auto" size="16" />
+				</div>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="border-none bg-[#121212]" sameWidth>
+				<DropdownMenu.Group>
+					<DropdownMenu.Item
+						class="flex gap-3 py-2 text-sm"
+						onclick={() => goto('/private/settings')}
+						><Settings size="20" /> Settings</DropdownMenu.Item
+					>
+					<DropdownMenu.Item class="flex gap-3 text-sm" onclick={() => handleLogout()}
+						><LogOut size="20" /> Log out</DropdownMenu.Item
+					>
+				</DropdownMenu.Group>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</div>
 	<div class="flex flex-col">
 		<div class="px-3 text-xs font-normal uppercase text-white/60">Vault</div>
-		<ul class="flex w-full flex-col gap-1 py-3 text-sm tracking-wide">
-			<li
-				class="flex w-full items-center gap-3 rounded-xl bg-[#292929] p-3 text-white hover:bg-[#29292992]"
-			>
-				<Shield fill="#4cc3a4" class="text-[#4cc3a4]" size="20" />
-				<div>Passwords</div>
-			</li>
-			<li class="flex items-center gap-3 rounded-xl p-3 text-white/70 hover:bg-[#29292943]">
-				<FileKey size="20" />
-				<div>Secure notes</div>
-			</li>
-			<li class="flex items-center gap-3 rounded-xl p-3 text-white/70 hover:bg-[#29292943]">
-				<CreditCard size="20" />
-				<div>Bank cards</div>
-			</li>
-			<li class="flex items-center gap-3 rounded-xl p-3 text-white/70 hover:bg-[#29292943]">
-				<Settings size="20" />
-				<div>Settings</div>
-			</li>
-		</ul>
+		<div class="flex w-full flex-col gap-1 py-3 text-sm tracking-wide">
+			{#each menuItems as item}
+				<button
+					onclick={() => goto(item.route)}
+					class:bg-[#292929]={item.route === $page.url.pathname}
+					class="flex w-full items-center gap-3 rounded-xl bg-[#292929] p-3 text-white hover:bg-[#29292992]"
+				>
+					<svelte:component
+						this={item.icon}
+						size="20"
+						class={item.route === $page.url.pathname ? 'text-[#4cc3a4]' : 'text-white'}
+					/>
+					<div>{item.text}</div>
+				</button>
+			{/each}
+		</div>
 	</div>
 </div>

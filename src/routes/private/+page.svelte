@@ -2,7 +2,8 @@
 	import type { ItemType } from './private.types';
 	import { decrypt } from '$lib/encryption/crypto';
 	import { privateStates } from './store/store.svelte';
-	import Content from './Content.svelte';
+	import ItemDetails from './ItemDetails.svelte';
+	import Items from './Items.svelte';
 
 	const { data } = $props() as any;
 
@@ -40,4 +41,7 @@
 	});
 </script>
 
-<Content />
+<div class="flex h-full w-full">
+	<Items />
+	<ItemDetails />
+</div>

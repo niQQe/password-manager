@@ -59,6 +59,8 @@
 		"password-meter": "^3.10.2",
 		"postgres": "^3.4.4",
 		"process": "^0.11.10",
+		"qrcode": "^1.5.4",
+		"speakeasy": "^2.0.0",
 		"svelte-sonner": "^0.3.27",
 		"tailwind-merge": "^2.3.0",
 		"tailwind-variants": "^0.2.1",

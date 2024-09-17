@@ -21,6 +21,12 @@ export type ItemType = {
 	password: string;
 };
 
+export type MenuItemType = {
+	icon: typeof import('lucide-svelte').Icon;
+	text: string;
+	route: string;
+};
+
 export type SharedLinkType = {
 	linkid: string;
 	data: string;

@@ -5,6 +5,7 @@ export const userTable = pgTable('users', {
 	userid: text('userid'),
 	email: text('email'),
 	salt: text('salt'),
+	mfa_valid: boolean('mfa_valid'),
 	created_at: timestamp('created_at')
 });
 

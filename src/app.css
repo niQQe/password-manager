@@ -27,7 +27,7 @@ input:focus {
 	outline: none !important;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
 	color: #666666;
 	font-weight: 500;
 }

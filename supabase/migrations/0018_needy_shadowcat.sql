@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "userData" (
+CREATE TABLE IF NOT EXISTS "userDataTable" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"data" text
 );

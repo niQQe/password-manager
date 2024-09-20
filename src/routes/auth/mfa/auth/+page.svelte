@@ -47,8 +47,7 @@
 				},
 				body: JSON.stringify({ status: true })
 			});
-			console.log(res);
-			goto('/private');
+			goto('/private/passwords');
 		}
 	}
 </script>

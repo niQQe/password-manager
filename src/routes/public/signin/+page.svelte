@@ -43,10 +43,9 @@
 					if (data.currentLevel === 'aal1' && data.nextLevel === 'aal1') {
 						goto('/auth/mfa/enroll');
 					} else if (data.nextLevel === 'aal2' && data.nextLevel !== data.currentLevel) {
-						console.log(data);
 						goto('/auth/mfa/auth');
 					} else {
-						goto('/private');
+						goto('/private/passwords');
 					}
 				} finally {
 				}

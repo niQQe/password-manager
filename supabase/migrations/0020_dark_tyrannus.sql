@@ -1,1 +1,1 @@
-ALTER TABLE "userData" DROP COLUMN IF EXISTS "data";
+ALTER TABLE "userDataTable" DROP COLUMN IF EXISTS "data";

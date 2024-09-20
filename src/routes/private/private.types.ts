@@ -1,25 +1,33 @@
 export interface StoreType {
-	items: Record<string, ItemType>;
+	data: {
+		passwords: Record<string, PasswordType>;
+		notes: Record<string, NoteType>;
+		bankcards: Record<string, BankCardType>;
+	};
 	salt: string;
-	itemDetails: ItemType;
+	passwordDetails: PasswordType;
 }
 
-export type OGDataType = {
-	logo: string;
-	title: string;
-	description: string;
-};
-
-export type ItemType = {
-	created_at: string;
+export type PasswordType = {
+	passwordid: string;
+	created_at: Date;
 	company_name: string;
-	updated_at: string;
+	updated_at: Date;
 	favorite: boolean;
-	itemid: string;
 	url: string;
 	username: string;
 	password: string;
 };
+
+export type NoteType = {
+	noteid: string | null;
+	title: string;
+	note: string;
+	updated_at: string;
+	created_at: string;
+};
+
+export type BankCardType = {};
 
 export type MenuItemType = {
 	icon: typeof import('lucide-svelte').Icon;

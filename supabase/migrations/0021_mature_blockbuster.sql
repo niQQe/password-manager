@@ -1,1 +1,1 @@
-DROP TABLE "userData";
+DROP TABLE "userDataTable";

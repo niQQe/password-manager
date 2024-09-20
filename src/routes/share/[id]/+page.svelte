@@ -63,19 +63,10 @@
 		<div class="m-auto flex w-full max-w-[500px] flex-col gap-8 rounded-3xl bg-[#0a0a0a] p-8">
 			<div class="flex w-full items-center gap-6">
 				<div class="h-[80px] w-[80px] overflow-hidden rounded-full">
-					{#if item.ogData.logo}
-						<div
-							class="contain h-full w-full"
-							style={`background-image:url(${item.ogData.logo});background-size:cover; background-position:50%`}
-						></div>
-					{:else}
-						<div
-							class="flex h-full w-full rounded-full border-4 border-[#153029]"
-							style="background:linear-gradient(34deg, rgb(66 142 219) 0%, rgb(80 212 146) 100%)"
-						>
-							<SquareAsterisk size="24" class="m-auto text-white" />
-						</div>
-					{/if}
+					<div
+						class="contain h-full w-full"
+						style={`background-image:url('https://img.logo.dev/${new URL(item.url).hostname}?token=pk_JJAmWTSNT82ETdhZr1Ab8w');background-size:contain;background-size:80px; background-position:50%`}
+					></div>
 				</div>
 				<div class="flex flex-col">
 					<div class="flex max-w-[200px] items-center gap-3 truncate text-3xl font-bold">

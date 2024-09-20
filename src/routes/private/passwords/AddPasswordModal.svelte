@@ -1,15 +1,15 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
-	import type { ItemType } from './private.types';
+	import type { PasswordType } from '../private.types';
 	import { SquareAsterisk, RectangleEllipsis, Eye, EyeOff } from 'lucide-svelte';
 	import { generatePassword } from '$lib/utils/';
-	import { saveItem } from './store/store.svelte';
+	import { savePassword } from '../store/store.svelte';
 	import { enhance } from '$app/forms';
 	import { Plus } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import PasswordStrengthMeasurer from './PasswordStrengthMeasurer.svelte';
-	import { privateStates } from './store/store.svelte';
+	import PasswordStrengthMeasurer from '../components/PasswordStrengthMeasurer.svelte';
+	import { privateData } from '../store/store.svelte';
 	import dayjs from 'dayjs';
 
 	let open = $state(false);
@@ -17,15 +17,15 @@
 	let urlAlreadyExist = $state(false);
 
 	let form = $state({
-		itemid: '',
+		passwordid: '',
 		company_name: '',
 		url: '',
 		username: '',
 		password: ''
-	}) as ItemType;
+	}) as PasswordType;
 
 	async function handleSavePassword(formData: FormData) {
-		await saveItem(formData, form);
+		await savePassword(formData, form);
 		setOpen(false);
 		toast.success('Item saved', {
 			description: dayjs().format('D MMM, YYYY HH:mm')
@@ -37,7 +37,7 @@
 			form.url = `https://${form.url}`;
 		}
 
-		urlAlreadyExist = Object.values(privateStates.items)
+		urlAlreadyExist = Object.values(privateData.data.passwords)
 			.map((i) => i.url)
 			.includes(form.url);
 	}
@@ -45,7 +45,6 @@
 	function handleGeneratePassword(e: MouseEvent) {
 		e.preventDefault();
 		form.password = generatePassword();
-		console.log('kärs?');
 	}
 
 	function setOpen(value: boolean) {
@@ -88,7 +87,7 @@
 		</Dialog.Header>
 		<div class="flex flex-col gap-10">
 			<form
-				action="/private?/modifyItem"
+				action="/private?/modifyData"
 				method="POST"
 				class="flex flex-col gap-6"
 				use:enhance={({ formData }) => handleSavePassword(formData)}
@@ -116,7 +115,7 @@
 						type="url"
 					/>
 					{#if urlAlreadyExist}
-						<p class="text-xs mt-[5px] font-medium text-red-500">This website is already added.</p>
+						<p class="mt-[5px] text-xs font-medium text-red-500">This website is already added.</p>
 					{/if}
 				</div>
 				<div class="relative flex flex-col">

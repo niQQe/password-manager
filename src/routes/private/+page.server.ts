@@ -1,5 +1,6 @@
+import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad, Actions } from './$types';
-import { userData, sharedLinks } from '$lib/db/schema';
+import { userDataTable, sharedLinksTable } from '$lib/db/schema';
 import { db } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import dayjs from 'dayjs';
@@ -19,28 +20,8 @@ function getExpireDate(value: string) {
 	}
 }
 
-export const load: LayoutServerLoad = async ({ locals, params }) => {
-	const { user } = (await locals.safeGetSession()) as any;
-	if (!user) return { status: 401, body: { message: 'Unauthorized' } };
-
-	const items = await db.query.userData.findFirst({
-		where: eq(userData.userid, user.id)
-	});
-
-	const salt = (
-		await db.query.userTable.findFirst({
-			where: eq(userData.userid, user.id)
-		})
-	)?.salt;
-
-	return {
-		salt,
-		items
-	};
-};
-
 export const actions: Actions = {
-	modifyItem: async ({ request, locals }) => {
+	modifyData: async ({ request, locals }) => {
 		const { user } = (await locals.safeGetSession()) as any;
 		if (!user) return { status: 401, body: { message: 'Unauthorized' } };
 
@@ -48,14 +29,14 @@ export const actions: Actions = {
 
 		const data = { ...Object.fromEntries(formData) };
 
-		const existingRow = await db.query.userData.findFirst({
-			where: eq(userData.userid, user.id)
+		const existingRow = await db.query.userDataTable.findFirst({
+			where: eq(userDataTable.userid, user.id)
 		});
 
 		if (existingRow) {
-			await db.update(userData).set(data).where(eq(userData.userid, user.id)).returning();
+			await db.update(userDataTable).set(data).where(eq(userDataTable.userid, user.id)).returning();
 		} else {
-			await db.insert(userData).values({
+			await db.insert(userDataTable).values({
 				userid: user.id,
 				...data
 			} as any);
@@ -72,7 +53,7 @@ export const actions: Actions = {
 		const expireAt = getExpireDate(expireOption) ?? null;
 
 		try {
-			await db.insert(sharedLinks).values({
+			await db.insert(sharedLinksTable).values({
 				...data,
 				...(expireAt ? { expires_at: String(expireAt) } : {})
 			} as any);

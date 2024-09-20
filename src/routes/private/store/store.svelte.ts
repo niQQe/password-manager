@@ -1,15 +1,19 @@
 import type { StoreType } from '../private.types';
 import { encrypt } from '$lib/encryption/crypto';
 import { nanoid } from 'nanoid';
-import axios from 'axios';
+import type { PasswordType, NoteType } from '../private.types';
 import dayjs from 'dayjs';
-export const privateStates: StoreType = $state({
-	items: {},
-	itemDetails: {
-		created_at: '2021-09-01T00:00:00.000Z',
-		updated_at: '2021-09-01T00:00:00.000Z',
+export const privateData: StoreType = $state({
+	data: {
+		passwords: {},
+		notes: {},
+		bankcards: {}
+	},
+	passwordDetails: {
+		created_at: new Date(),
+		updated_at: new Date(),
 		company_name: 'Pornhub',
-		itemid: '123',
+		passwordid: '123',
 		favorite: false,
 		url: 'https://www.pornhub.com',
 		username: 'roccosifredi78',
@@ -18,35 +22,14 @@ export const privateStates: StoreType = $state({
 	salt: ''
 });
 
-export async function saveItem(formData: FormData, form: any) {
-	const item = privateStates.items[form.itemid];
-
-	// Since post and put requests are handled by the same function, we need to check if the item already exists
-	// If it does not exist, we need to generate a new itemid
-	if (item) {
-		privateStates.items[form.itemid] = {
-			...form,
-			favorite: form.favorite,
-			created_at: item.created_at,
-			updated_at: dayjs().toDate()
-		};
-	} else {
-		privateStates.items[nanoid()] = {
-			...form,
-			itemid: nanoid(),
-			favorite: false,
-			created_at: dayjs().toDate(),
-			updated_at: dayjs().toDate()
-		};
-	}
-
-	const data = JSON.stringify(Object.values(privateStates.items));
+async function handleEncryptAndSetFormData(formData: FormData) {
+	const data = JSON.stringify(privateData.data);
 
 	const { encryptedData, iv, tag } = await encrypt(
 		{
 			masterPassword: 'Spqmd!Vodk07',
 			data,
-			salt: privateStates.salt
+			salt: privateData.salt
 		},
 		window.argon2,
 		window.crypto,
@@ -59,36 +42,80 @@ export async function saveItem(formData: FormData, form: any) {
 	formData.set('tag', tag);
 }
 
-export async function deleteItem(formData: FormData, itemid: string) {
-	// Filter out the item that is being deleted
-	const data = JSON.stringify(
-		Object.values(privateStates.items).filter((item) => item.itemid !== itemid)
-	);
-	const { encryptedData, iv, tag } = await encrypt(
-		{
-			masterPassword: 'Spqmd!Vodk07',
-			data,
-			salt: privateStates.salt
-		},
-		window.argon2,
-		window.crypto,
-		true
-	);
-	formData.set('data', encryptedData);
-	formData.set('iv', iv);
-	formData.set('tag', tag);
+export async function saveNote(formData: FormData, form: NoteType) {
+	const item = privateData.data.notes[form.noteid];
+
+	console.log(form);
+
+	// Since post and put requests are handled by the same function, we need to check if the item already exists
+	// If it does not exist, we need to generate a new itemid
+	if (item) {
+		privateData.data.notes[form.noteid] = {
+			...form,
+			created_at: item.created_at,
+			updated_at: String(dayjs().toDate())
+		};
+	} else {
+		const generatedId = nanoid();
+		privateData.data.notes[generatedId] = {
+			...form,
+			noteid: generatedId,
+			created_at: String(dayjs().toDate()),
+			updated_at: String(dayjs().toDate())
+		};
+	}
+
+	await handleEncryptAndSetFormData(formData);
+}
+
+export async function savePassword(formData: FormData, form: PasswordType) {
+	console.log(privateData.data.passwords);
+
+	const item = privateData.data.passwords[form.passwordid];
+
+	// Since post and put requests are handled by the same function, we need to check if the item already exists
+	// If it does not exist, we need to generate a new itemid
+	if (item) {
+		privateData.data.passwords[form.passwordid] = {
+			...form,
+			favorite: form.favorite,
+			created_at: item.created_at,
+			updated_at: dayjs().toDate()
+		};
+	} else {
+		const generatedId = nanoid();
+		privateData.data.passwords[generatedId] = {
+			...form,
+			passwordid: generatedId,
+			favorite: false,
+			created_at: dayjs().toDate(),
+			updated_at: dayjs().toDate()
+		};
+	}
+
+	await handleEncryptAndSetFormData(formData);
+}
+
+export async function deletePassword(formData: FormData, passwordid: string) {
+	delete privateData.data.passwords[passwordid];
+	await handleEncryptAndSetFormData(formData);
+}
+
+export async function deleteNote(formData: FormData, noteid: string) {
+	delete privateData.data.notes[noteid];
+	await handleEncryptAndSetFormData(formData);
 }
 
 export async function generateLink(
 	formData: FormData,
-	itemid: string,
+	passwordid: string,
 	password: string,
 	usageLimit: number,
 	expirationDate: number | null
 ) {
 	const salt = nanoid();
 	const linkid = nanoid(10);
-	const data = JSON.stringify(privateStates.items[itemid]);
+	const data = JSON.stringify(privateData.data.passwords[passwordid]);
 
 	const { encryptedData, iv, tag } = await encrypt(
 		{

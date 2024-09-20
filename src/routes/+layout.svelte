@@ -1,9 +1,6 @@
 <script>
 	import '../app.css';
 	import { onMount } from 'svelte';
-	onMount(async () => {
-		if (!window.argon2) await import('argon2-browser');
-	});
 	const { children } = $props();
 </script>
 

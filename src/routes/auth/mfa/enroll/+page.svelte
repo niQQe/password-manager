@@ -41,8 +41,7 @@
 			verifyIsPending = false;
 			throw verify.error;
 		} else {
-			console.log('verified');
-			goto('/private');
+			goto('/private/passwords');
 		}
 	}
 

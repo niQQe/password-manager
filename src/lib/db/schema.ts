@@ -9,7 +9,7 @@ export const userTable = pgTable('users', {
 	created_at: timestamp('created_at')
 });
 
-export const userData = pgTable('user-data', {
+export const userDataTable = pgTable('user-data', {
 	id: uuid('id').primaryKey(),
 	userid: text('userid'),
 	data: text('data'),
@@ -18,7 +18,7 @@ export const userData = pgTable('user-data', {
 	changed_at: text('changed_at')
 });
 
-export const sharedLinks = pgTable('shared-links', {
+export const sharedLinksTable = pgTable('shared-links', {
 	id: integer('id').primaryKey(),
 	created_at: timestamp('created_at'),
 	linkid: text('linkid'),

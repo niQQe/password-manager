@@ -5,7 +5,7 @@ export const load = async ({ locals }) => {
 	const { user } = await locals.safeGetSession();
 
 	if (user) {
-		redirect(303, '/private');
+		redirect(303, '/private/passwords');
 	}
 
 	return { user };

@@ -11,6 +11,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	await locals.supabase.auth.refreshSession();
 	const { data: mfaData } = await locals.supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 	if (mfaData?.currentLevel === 'aal2') {
-		redirect(303, '/private');
+		redirect(303, '/private/passwords');
 	}
 };

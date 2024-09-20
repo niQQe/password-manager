@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { Copy, Check, ChevronDown } from 'lucide-svelte';
-
+	import { Copy, Check } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import * as Select from '$lib/components/ui/select/index.js';
-	import { generateLink } from './store/store.svelte';
+	import { generateLink } from '../store/store.svelte';
 	import { nanoid } from 'nanoid';
 	import { copyToClipboard } from '$lib/utils/';
 
-	import dayjs from 'dayjs';
-
-	const { itemid }: { itemid: string } = $props();
+	const { passwordid }: { passwordid: string } = $props();
 
 	const expirationOptions = [
 		{ value: 1, label: 'One minute' },
@@ -46,7 +43,7 @@
 
 	async function handleGenerateLink(formData: FormData) {
 		password = nanoid(16);
-		await generateLink(formData, itemid, password, selectedLinkUses, selectedExpirationTime);
+		await generateLink(formData, passwordid, password, selectedLinkUses, selectedExpirationTime);
 		return ({ result }: { result: any }) => {
 			generatedLink = `http://localhost:5173/share/${result.data.body.linkid}${password}`;
 		};
@@ -63,7 +60,9 @@
 			<div class="text-sm font-normal tracking-wide text-white/50">Expiration time</div>
 			<div class="flex">
 				<Select.Root portal={null}>
-					<Select.Trigger class="w-[180px] border-none bg-[#292929] hover:bg-white/20 transition-all">
+					<Select.Trigger
+						class="w-[180px] border-none bg-[#292929] transition-all hover:bg-white/20"
+					>
 						<Select.Value placeholder="No limit" />
 					</Select.Trigger>
 					<Select.Content class="border-none bg-[#292929] ">
@@ -84,9 +83,9 @@
 		<div class="flex flex-col gap-1">
 			<div class="text-sm font-normal tracking-wide text-white/50">Link uses</div>
 			<div class="flex gap-3">
-				{#each Object.values(linkUsesOptions) as value, label}
+				{#each Object.values(linkUsesOptions) as value}
 					<button
-						class={` ${selectedLinkUses === value ? 'bg-white/30' : ''} min-w-[40px] rounded-md bg-[#292929] p-2 text-sm hover:bg-white/20 transition-all`}
+						class={` ${selectedLinkUses === value ? 'bg-white/30' : ''} min-w-[40px] rounded-md bg-[#292929] p-2 text-sm transition-all hover:bg-white/20`}
 						onclick={() => (selectedLinkUses = value)}>{value}</button
 					>
 				{/each}

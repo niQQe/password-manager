@@ -21,7 +21,7 @@
 		{
 			icon: Shield,
 			text: 'Passwords',
-			route: '/private'
+			route: '/private/passwords'
 		},
 		{
 			icon: Activity,
@@ -31,7 +31,7 @@
 		{
 			icon: FileKey,
 			text: 'Secure notes',
-			route: ''
+			route: '/private/secure_notes'
 		},
 		{
 			icon: CreditCard,

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { privateStates } from './store/store.svelte';
+	import { privateData } from '../store/store.svelte';
 	import { Search, X } from 'lucide-svelte';
 
 	import { onMount } from 'svelte';
 
-	import ItemCard from './ItemCard.svelte';
-	import type { ItemType } from './private.types';
+	import PasswordCard from './PasswordCard.svelte';
+	import type { PasswordType } from '../private.types';
 
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import CreateItem from './CreateItem.svelte';
+	import AddPasswordModal from './AddPasswordModal.svelte';
 
 	dayjs.extend(relativeTime);
 	let isScrolling = $state(false);
@@ -17,26 +17,26 @@
 	let inputFocused = $state(false);
 	let searchValue = $state('');
 
-	const noItems = $derived(() => !Object.keys(privateStates.items).length);
+	const noItems = $derived(() => !Object.keys(privateData.data.passwords ?? {})?.length);
 
 	const derivedItems = $derived(() => {
 		const searchLower = searchValue.toLowerCase();
 		const result: {
-			favorites: ItemType[];
-			sorted: ItemType[];
+			favorites: PasswordType[];
+			sorted: PasswordType[];
 		} = { favorites: [], sorted: [] };
 
-		Object.values(privateStates.items).forEach((item) => {
-			const combinedKey = `${item.company_name} ${item.url}`.toLowerCase();
+		Object.values(privateData.data.passwords ?? {}).forEach((password) => {
+			const combinedKey = `${password.company_name} ${password.url}`.toLowerCase();
 
-			// If the item doesn't match the search, skip it
+			// If the password doesn't match the search, skip it
 			if (!combinedKey.includes(searchLower)) return;
 
-			// Add item to the favorites or sorted list
-			if (item.favorite) {
-				result.favorites.push(item);
+			// Add password to the favorites or sorted list
+			if (password.favorite) {
+				result.favorites.push(password);
 			} else {
-				result.sorted.push(item);
+				result.sorted.push(password);
 			}
 		});
 
@@ -89,7 +89,7 @@
 							</button>
 						{/if}
 					</div>
-					<CreateItem />
+					<AddPasswordModal />
 				</div>
 			</div>
 		</div>
@@ -111,8 +111,8 @@
 						Favorites
 					</div>
 					<div class="mb-3 flex flex-col">
-						{#each derivedItems().favorites as item}
-							<ItemCard {item} />
+						{#each derivedItems().favorites as password}
+							<PasswordCard {password} />
 						{/each}
 					</div>
 				{/if}
@@ -121,10 +121,10 @@
 						Sorted by newest
 					</div>
 				{/if}
-				{#each derivedItems().sorted as item}
-					<ItemCard {item} />
+				{#each derivedItems().sorted as password}
+					<PasswordCard {password} />
 				{/each}
-				{#if derivedItems().favorites.length === 0 && derivedItems().sorted.length === 0}
+				{#if !derivedItems().favorites.length && !derivedItems().sorted.length}
 					<div class="flex w-full flex-1">
 						<div class="m-auto flex flex-col items-center justify-center gap-3 text-white/60">
 							<div class="text-4xl"><Search size="30" class="text-[#4cc3a4]" /></div>

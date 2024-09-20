@@ -1,1 +1,1 @@
-ALTER TABLE "userData" ALTER COLUMN "data" SET DATA TYPE text;
+ALTER TABLE "userDataTable" ALTER COLUMN "data" SET DATA TYPE text;

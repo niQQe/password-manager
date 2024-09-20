@@ -4,8 +4,8 @@
   "version": "6",
   "dialect": "postgresql",
   "tables": {
-    "public.userData": {
-      "name": "userData",
+    "public.userDataTable": {
+      "name": "userDataTable",
       "schema": "",
       "columns": {
         "id": {

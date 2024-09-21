@@ -1,21 +1,17 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import type { NoteType } from '../private.types';
-	import { saveNote, deleteNote } from '../store/store.svelte';
-	import { Trash } from 'lucide-svelte';
+	import { saveNote } from '../store/store.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
-	import { privateData } from '../store/store.svelte';
 
 	const {
 		open,
-		noteid,
-		setOpen
+		setOpenAddNoteModal
 	}: {
 		open: boolean;
-		noteid?: string | null;
-		setOpen: (value: boolean) => void;
+		setOpenAddNoteModal: (value: boolean) => void;
 	} = $props();
 
 	let form = $state({
@@ -25,44 +21,33 @@
 	}) as NoteType;
 
 	$effect(() => {
-		if (open) {
+		if (!open) {
 			form = {
 				noteid: null,
-				title: privateData.data.notes[noteid ?? '']?.title ?? '',
-				note: privateData.data.notes[noteid ?? '']?.note ?? ''
+				title: '',
+				note: ''
 			} as NoteType;
 		}
 	});
 
-	async function handleDeleteNote(formData: FormData) {
-		console.log(noteid);
-		if (!noteid) return;
-		await deleteNote(formData, noteid);
-		setOpen(false);
+	function handleClose(e: MouseEvent) {
+		e.preventDefault();
+		setOpenAddNoteModal(false);
 	}
 
 	async function handleSaveNote(formData: FormData) {
 		await saveNote(formData, form);
-		setOpen(false);
+		setOpenAddNoteModal(false);
 		toast.success('Item saved', {
 			description: dayjs().format('D MMM, YYYY HH:mm')
 		});
 	}
 </script>
 
-<Dialog.Root {open} onOpenChange={setOpen}>
+<Dialog.Root {open} onOpenChange={setOpenAddNoteModal}>
 	<Dialog.Content class="min-w-[600px] border-white/[2%] bg-[#0f0f0f]  p-12 sm:max-w-[425px]">
 		<Dialog.Header class="mb-4 flex flex-row items-center gap-3 text-xl">
 			<div>Add secure note</div>
-			<form
-				action="/private?/modifyData"
-				method="POST"
-				use:enhance={async ({ formData }) => await handleDeleteNote(formData)}
-			>
-				<button class="text-red-500/70 hover:text-red-500/100">
-					<Trash size="24" />
-				</button>
-			</form>
 		</Dialog.Header>
 		<div class="flex flex-col gap-10">
 			<form
@@ -76,7 +61,7 @@
 					<input
 						placeholder="Title of your note"
 						required
-						class="h-[40px] border-b border-b-white/20 bg-transparent transition-all focus:border-[#4cc3a4]"
+						class="h-[40px] border-b border-b-white/20 bg-transparent text-xl transition-all focus:border-[#4cc3a4]"
 						bind:value={form.title}
 						id="title"
 						type="text"
@@ -97,7 +82,7 @@
 
 				<div class="flex justify-end gap-3">
 					<button
-						onclick={() => setOpen(false)}
+						onclick={(e) => handleClose(e)}
 						class="text-md rounded-lg p-3 px-4 font-medium hover:bg-white/[5%]">Cancel</button
 					>
 					<button

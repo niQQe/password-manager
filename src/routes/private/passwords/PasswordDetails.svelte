@@ -35,7 +35,7 @@
 		hasChanged = JSON.stringify(password) !== JSON.stringify(originalPassword);
 	});
 
-	const nopasswords = $derived(() => !Object.keys(privateData.passwordDetails ?? {}).length);
+	const noPasswords = $derived(() => !Object.keys(privateData.passwordDetails ?? {}).length);
 
 	async function handledeletePassword(formData: FormData) {
 		if (!privateData.data.passwords) return;
@@ -81,7 +81,7 @@
 </script>
 
 <div class="z-[20] flex max-w-[650px] flex-1 flex-col bg-[#0a0a0a] p-6">
-	{#if nopasswords()}
+	{#if noPasswords()}
 		<div class="flex h-full w-full">
 			<div class="m-auto flex flex-col gap-2">
 				<div class="border-b border-white/10 pb-3 text-center text-2xl font-bold">
@@ -94,7 +94,7 @@
 		</div>
 	{:else}
 		<div class="relative flex flex-1 flex-col gap-6">
-			<div class="items-center flex w-full gap-6 p-4">
+			<div class="flex w-full items-center gap-6 p-4">
 				<div class="h-[80px] w-[80px] overflow-hidden rounded-full">
 					<div
 						class="contain h-full w-full"
@@ -102,7 +102,7 @@
 					></div>
 				</div>
 				<div class="flex flex-col">
-					<div class="max-w-250px] items-center flex gap-3 truncate text-3xl font-bold">
+					<div class="max-w-250px] flex items-center gap-3 truncate text-3xl font-bold">
 						{password.company_name}
 						<Star size="22" fill={password.favorite ? '#fff' : 'transparent'} />
 					</div>
@@ -110,7 +110,7 @@
 						{password.url.replace('https://', '')}
 					</div>
 				</div>
-				<div class="items-center mb-auto ml-auto mt-2 flex gap-2">
+				<div class="mb-auto ml-auto mt-2 flex items-center gap-2">
 					{#if editActive}
 						<div class="flex justify-end gap-6">
 							<button class="text-white/80 hover:text-white" onclick={() => handleActivateEdit()}
@@ -138,7 +138,7 @@
 						<form
 							action="/private?/modifyData"
 							use:enhance={({ formData }) => handledeletePassword(formData)}
-							class="items-center flex"
+							class="flex items-center"
 							method="POST"
 						>
 							<button
@@ -171,7 +171,7 @@
 					<form class="flex flex-col gap-6">
 						<div class="relative flex flex-col">
 							{#if copied.username}
-								<Check size="20" class="absolute right-0 top-6 cursor-pointer text-green-500" />
+								<Check size="20" class="absolute right-0 top-6 cursor-pointer text-[#4cc3a4]" />
 							{:else}
 								<Copy
 									size="20"
@@ -191,7 +191,7 @@
 						</div>
 						<div class="relative flex flex-col">
 							{#if copied.password}
-								<Check size="20" class="absolute right-0 top-6 cursor-pointer text-green-500" />
+								<Check size="20" class="absolute right-0 top-6 cursor-pointer text-[#4cc3a4]" />
 							{:else}
 								<Copy
 									size="20"
@@ -257,13 +257,13 @@
 						<div class="flex flex-col gap-1">
 							<div class="text-sm font-normal tracking-wide text-white/50">Last Modified</div>
 							<div class="text-md font-normal tracking-wide text-white/80">
-								{dayjs(password.updated_at).format('MMM DD, YYYY hh:mm A')}
+								{dayjs(password.updated_at).format('MMM DD, YYYY HH:mm')}
 							</div>
 						</div>
 						<div class="flex flex-col gap-1">
 							<div class="text-sm font-normal tracking-wide text-white/50">Created</div>
 							<div class="text-md font-normal tracking-wide text-white/80">
-								{dayjs(password.created_at).format('MMM DD, YYYY hh:mm A')}
+								{dayjs(password.created_at).format('MMM DD, YYYY HH:mm')}
 							</div>
 						</div>
 					</div>

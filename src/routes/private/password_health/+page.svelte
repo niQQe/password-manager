@@ -41,7 +41,10 @@
 	const atRiskPasswords = $derived(() => {
 		if (filterOptions.weak) {
 			return Object.values(privateData.data.passwords).filter((password) => {
-				return new PasswordMeter().getResult(password.password).percent < 50;
+				return (
+					new PasswordMeter().getResult(password.password).percent < 50 &&
+					reusedPasswordCount()[password.password] === 1
+				);
 			});
 		}
 		if (filterOptions.reused) {

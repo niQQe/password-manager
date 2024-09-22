@@ -39,12 +39,23 @@
 			</button>
 		</div>
 	</div>
-	<div
-		class="relative grid gap-4"
-		style="grid-template-columns: repeat(auto-fill, minmax(148px, 1fr))"
-	>
-		{#each Object.values(privateData.data.notes) as note}
-			<NoteCard {note} {handleViewNote} />
-		{/each}
-	</div>
+	{#if Object.values(privateData.data.notes).length === 0}
+		<div class="flex h-full w-full">
+			<div class="m-auto flex flex-col gap-2">
+				<div class="border-b border-white/10 pb-3 text-center text-2xl font-bold">
+					No notes added yet!
+				</div>
+				<div class="text-center text-white/70">Use the plus [+] button at the top to add some!</div>
+			</div>
+		</div>
+	{:else}
+		<div
+			class="relative grid gap-4"
+			style="grid-template-columns: repeat(auto-fill, minmax(148px, 1fr))"
+		>
+			{#each Object.values(privateData.data.notes) as note}
+				<NoteCard {note} {handleViewNote} />
+			{/each}
+		</div>
+	{/if}
 </div>

@@ -4,9 +4,10 @@
 	import type { NoteType } from '../private.types';
 	import { enhance } from '$app/forms';
 	import { privateData } from '../store/store.svelte';
-	import { Pencil, Trash } from 'lucide-svelte';
+	import { Edit, Trash, Copy, Check } from 'lucide-svelte';
 	import { tick } from 'svelte';
-	import { clone } from '$lib/utils/';
+	import { clone, copyToClipboard } from '$lib/utils/';
+	import dayjs from 'dayjs';
 
 	const {
 		open,
@@ -23,6 +24,7 @@
 
 	let editActive = $state(false);
 	let changesMade = $state(false);
+	let copied = $state(false);
 
 	let titleRef: HTMLElement | undefined = $state();
 
@@ -65,6 +67,14 @@
 		}
 	});
 
+	function handleCopyToClipboard(value: string) {
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 3000);
+		copyToClipboard(value);
+	}
+
 	$effect(() => {
 		if (!noteid) return;
 		if (open) {
@@ -81,25 +91,23 @@
 <Dialog.Root {open} onOpenChange={setOpenViewNoteModal}>
 	<Dialog.Content class="min-w-[600px] border-white/[2%] bg-[#0f0f0f]  p-12 sm:max-w-[425px]">
 		<div class="flex flex-col gap-10">
+			<form
+				action="/private?/modifyData"
+				class="absolute bottom-16 left-12"
+				method="POST"
+				use:enhance={({ formData }) => handleDeleteNote(formData)}
+			>
+				<button type="submit" class="flex items-center">
+					<Trash size="18" class="text-red-500/80 hover:text-red-500" />
+				</button>
+			</form>
 			<div class="absolute right-12 top-4 flex items-center gap-3">
 				<button
 					onclick={(e) => handleEditActive(e)}
-					class={`${editActive ? 'text-white' : 'text-white/70'} flex items-center`}
+					class={`${editActive ? 'text-white' : 'text-white/70'} flex items-center hover:text-white`}
 				>
-					<Pencil size="18" />
+					<Edit size="18" />
 				</button>
-				{#if editActive}
-					<form
-						action="/private?/modifyData"
-						class="p-0"
-						method="POST"
-						use:enhance={({ formData }) => handleDeleteNote(formData)}
-					>
-						<button type="submit" class="flex items-center">
-							<Trash size="18" class="text-red-500/80 hover:text-red-500" />
-						</button>
-					</form>
-				{/if}
 			</div>
 			<form
 				action="/private?/modifyData"
@@ -109,13 +117,11 @@
 			>
 				<div class="flex w-full items-center justify-between">
 					<div class="relative flex w-full flex-col gap-1">
-						{#if editActive}
-							<label class="text-sm text-white/80" for="title">Title</label>
-						{/if}
+						<label class="text-sm text-white/80" for="title">Title</label>
 						<input
 							placeholder="Title of your note"
 							required
-							class={`h-[40px] w-full ${editActive ? 'border-b border-b-white/20 transition-all focus:border-[#4cc3a4]' : 'pointer-events-none'}  bg-transparent !text-xl  `}
+							class={`${editActive ? 'border-b-white/10' : 'pointer-events-none border-b-white/5'} h-[40px] w-full border-b  bg-transparent !text-xl transition-all focus:border-[#4cc3a4]`}
 							bind:value={form.title}
 							bind:this={titleRef}
 							id="title"
@@ -125,16 +131,31 @@
 				</div>
 
 				<div class="relative flex flex-col gap-2">
-					{#if editActive}
-						<label class="text-sm text-white/80" for="title">Note</label>
-					{/if}
+					<label class="text-sm text-white/80" for="title">Note</label>
 					<textarea
 						bind:value={form.note}
 						placeholder="Your note"
 						required
-						class={`  ${editActive ? 'transition-border !border-white/10 p-3  focus:!border-b-[#4cc3a4]' : 'pointer-events-none !border-white/5'} max-h-[300px] min-h-[300px] rounded-lg border bg-transparent p-4 !shadow-none !outline-none transition-all`}
+						class={`  ${editActive ? 'transition-border !border-white/10 p-3  focus:!border-[#4cc3a4]' : 'pointer-events-none !border-white/5'} max-h-[300px] min-h-[300px] rounded-lg border bg-transparent p-4 !shadow-none !outline-none transition-all`}
 						id="note"
 					></textarea>
+					{#if copied}
+						<Check size="20" class="absolute right-2 top-9 cursor-pointer text-[#4cc3a4]" />
+					{:else}
+						<Copy
+							size="20"
+							class="absolute right-2 top-9 cursor-pointer text-white/80 hover:text-white"
+							onclick={() => handleCopyToClipboard(form.note)}
+						/>
+					{/if}
+					<div class="left-3 top-3 text-xs text-white/70">
+						<div class="flex flex-col gap-1">
+							<div class="text-xs font-normal tracking-wide text-white/50">Last Modified</div>
+							<div class="text-xs font-normal tracking-wide text-white/80">
+								{dayjs(form.updated_at).format('MMM DD, YYYY HH:mm')}
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="flex justify-end gap-3">
 					<button

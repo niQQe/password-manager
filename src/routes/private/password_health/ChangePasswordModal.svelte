@@ -1,12 +1,11 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
-	import type { ItemType } from '../private.types';
-	import * as Tabs from '$lib/components/ui/tabs';
+	import type { PasswordType } from '../private.types';
 	let {
 		item,
 		open,
 		setOpenChangePasswordModal
-	}: { item: ItemType; open: boolean; setOpenChangePasswordModal: (value: boolean) => void } =
+	}: { item: PasswordType; open: boolean; setOpenChangePasswordModal: (value: boolean) => void } =
 		$props();
 </script>
 

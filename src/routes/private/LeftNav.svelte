@@ -36,7 +36,7 @@
 		{
 			icon: CreditCard,
 			text: 'Bank cards',
-			route: ''
+			route: '/private/bank_cards'
 		},
 		{
 			icon: Settings,
